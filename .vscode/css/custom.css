@@ -1,0 +1,111 @@
+/* Custom styles to enhance appearance */
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.4rem;
+}
+
+/* navbar tweaks */
+.navbar {
+  background: linear-gradient(
+    90deg,
+    rgba(6, 250, 205, 0.95),
+    rgba(6, 150, 205, 0.95)
+  );
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.navbar .navbar-logo {
+  letter-spacing: 1px;
+}
+
+/* cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.6rem;
+  align-items: stretch;
+  padding: 2rem 0 4rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1.6rem;
+  border-radius: 12px;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+
+.menu-card-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 auto 0.8rem;
+  display: block;
+}
+
+.menu-card-title {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 0.4rem;
+}
+
+.menu-card-price {
+  color: #ffd166;
+  font-weight: 700;
+}
+
+/* buttons */
+.btn,
+.cta {
+  background: #ff7b54;
+  color: #fff;
+  padding: 0.8rem 1.6rem;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* about image */
+.about-img img {
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* contact map + form */
+.contact .row {
+  gap: 2rem;
+}
+
+.contact .row form {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.input-group {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* responsive tweaks */
+@media (max-width: 768px) {
+  .hero .content h1 {
+    font-size: 3rem;
+  }
+  .navbar .navbar-nav {
+    width: 100%;
+  }
+}
