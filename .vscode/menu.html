@@ -27,7 +27,6 @@
         <a href="about.html">Tentang Kami</a>
         <a href="menu.html">Menu</a>
         <a href="contact.html">Kontak</a>
-        <a href="git-dashboard.html">Git</a>
       </div>
 
       <div class="navbar-extra">
@@ -40,8 +39,9 @@
     <section id="menu" class="menu container">
       <h2><span>Menu </span>Kami</h2>
       <p align="center">
+        Nikmati mennu sajian kami yang lezat dan buat nagih untuk makan lagi.
         Koleksi menu pilihan dengan kualitas terbaik dan harga terjangkau. Dari
-        burger premium, kentang goreng crunch, hingga minuman ber-ice cream yang
+        burger premium, kentang goreng crunch, hingga minuman Cocola yang
         nikmat. Semua dibuat fresh setiap hari untuk kepuasan Anda!
       </p>
 
@@ -49,30 +49,243 @@
         <div class="menu-card card">
           <img src="img/kentang1.jpg" alt="Kentang" class="menu-card-img" />
           <h3 class="menu-card-title">Kentang Goreng</h3>
-          <p class="menu-card-price">IDR 20K</p>
+          <p class="menu-card-price">IDR 20000</p>
+          <button
+            class="btn-order"
+            data-name="Kentang Goreng"
+            data-price="20000"
+          >
+            🛒 Pesan
+          </button>
         </div>
         <div class="menu-card card">
           <img src="img/gambar2.jpg" alt="Paket Burger" class="menu-card-img" />
-          <h3 class="menu-card-title">Paket Burger Premium</h3>
-          <p class="menu-card-price">IDR 55K</p>
+          <h3 class="menu-card-title">Paket Burger 1</h3>
+          <p class="menu-card-price">IDR 65000</p>
+          <button
+            class="btn-order"
+            data-name="Paket Burger 1"
+            data-price="65000"
+          >
+            🛒 Pesan
+          </button>
         </div>
         <div class="menu-card card">
           <img src="img/Kentang.jpg" alt="Kentang" class="menu-card-img" />
-          <h3 class="menu-card-title">Kentang Pedas</h3>
-          <p class="menu-card-price">IDR 25K</p>
+          <h3 class="menu-card-title">Kentang</h3>
+          <p class="menu-card-price">IDR 25000</p>
+          <button class="btn-order" data-name="Kentang" data-price="25000">
+            🛒 Pesan
+          </button>
         </div>
         <div class="menu-card card">
           <img src="img/minuman.jpg" alt="Minuman" class="menu-card-img" />
-          <h3 class="menu-card-title">Ice Cream Shake</h3>
-          <p class="menu-card-price">IDR 18K</p>
+          <h3 class="menu-card-title">Cocola</h3>
+          <p class="menu-card-price">IDR 15000</p>
+          <button class="btn-order" data-name="Cocola" data-price="15000">
+            🛒 Pesan
+          </button>
         </div>
         <div class="menu-card card">
           <img src="img/burger1.jpg" alt="Burger" class="menu-card-img" />
-          <h3 class="menu-card-title">Burger Double Cheese</h3>
-          <p class="menu-card-price">IDR 35K</p>
+          <h3 class="menu-card-title">Burger Black Paper Double Cheese</h3>
+          <p class="menu-card-price">IDR 35000</p>
+          <button
+            class="btn-order"
+            data-name="Burger Black Paper Double Cheese"
+            data-price="35000"
+          >
+            🛒 Pesan
+          </button>
         </div>
       </div>
     </section>
+
+    <!-- Modal Pemesanan -->
+    <div id="orderModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Form Pemesanan</h2>
+
+        <div class="order-container">
+          <!-- Form Input -->
+          <div class="order-form">
+            <div class="form-group">
+              <label>Nama Menu</label>
+              <input type="text" id="menuName" readonly class="input-field" />
+            </div>
+
+            <div class="form-group">
+              <label>Harga Satuan</label>
+              <input type="text" id="menuPrice" readonly class="input-field" />
+            </div>
+
+            <div class="form-group">
+              <label>Jumlah Pesanan</label>
+              <div class="quantity-control">
+                <button id="decreaseQty" class="qty-btn">-</button>
+                <input
+                  type="number"
+                  id="quantity"
+                  value="1"
+                  min="1"
+                  class="qty-input"
+                />
+                <button id="increaseQty" class="qty-btn">+</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Nama Pemesan</label>
+              <input
+                type="text"
+                id="customerName"
+                placeholder="Masukkan nama Anda"
+                class="input-field"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>No. Telepon</label>
+              <input
+                type="tel"
+                id="customerPhone"
+                placeholder="Masukkan no. telepon Anda"
+                class="input-field"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Catatan Tambahan</label>
+              <textarea
+                id="notes"
+                placeholder="Tambahkan catatan khusus (opsional)"
+                class="input-field"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <button id="submitOrder" class="btn btn-submit">
+              📋 Kirim Pesanan
+            </button>
+          </div>
+
+          <!-- Preview Bill -->
+          <div class="order-preview">
+            <h3>Preview Pesanan</h3>
+            <div class="bill">
+              <div class="bill-header">
+                <h4>STRUK PESANAN</h4>
+                <p>Makanan Cepat Saji</p>
+              </div>
+
+              <div class="bill-items">
+                <div class="bill-item">
+                  <span>Produk:</span>
+                  <span id="billProduct">-</span>
+                </div>
+                <div class="bill-item">
+                  <span>Harga:</span>
+                  <span id="billPrice">-</span>
+                </div>
+                <div class="bill-item">
+                  <span>Jumlah:</span>
+                  <span id="billQty">-</span>
+                </div>
+                <div class="bill-divider"></div>
+                <div class="bill-item bill-total">
+                  <span>TOTAL:</span>
+                  <span id="billTotal">IDR 0</span>
+                </div>
+              </div>
+
+              <div class="bill-info">
+                <div class="bill-item-small">
+                  <span>Pemesan:</span>
+                  <span id="billCustomer">-</span>
+                </div>
+                <div class="bill-item-small">
+                  <span>No. HP:</span>
+                  <span id="billPhone">-</span>
+                </div>
+                <div class="bill-item-small">
+                  <span>Catatan:</span>
+                  <span id="billNotes">-</span>
+                </div>
+              </div>
+
+              <div class="bill-footer">
+                <p>Terima kasih telah memesan!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Bill Hasil Pesanan -->
+    <div id="billModal" class="modal">
+      <div class="modal-content bill-modal-content">
+        <span class="close close-bill">&times;</span>
+        <h2>BILL PESANAN ANDA</h2>
+
+        <div class="bill-result">
+          <div class="bill-header">
+            <h4>🍔 MAKANAN CEPAT SAJI 🍔</h4>
+            <p class="timestamp" id="orderTime"></p>
+          </div>
+
+          <div class="bill-items">
+            <div class="bill-item">
+              <span>Produk:</span>
+              <span id="resultProduct">-</span>
+            </div>
+            <div class="bill-item">
+              <span>Harga Satuan:</span>
+              <span id="resultPrice">-</span>
+            </div>
+            <div class="bill-item">
+              <span>Jumlah:</span>
+              <span id="resultQty">-</span>
+            </div>
+            <div class="bill-divider"></div>
+            <div class="bill-item bill-total">
+              <span>TOTAL PEMBAYARAN:</span>
+              <span id="resultTotal">IDR 0</span>
+            </div>
+          </div>
+
+          <div class="bill-info">
+            <h4>Data Pemesan</h4>
+            <div class="bill-item-small">
+              <span>Nama:</span>
+              <span id="resultCustomer">-</span>
+            </div>
+            <div class="bill-item-small">
+              <span>No. Telepon:</span>
+              <span id="resultPhone">-</span>
+            </div>
+            <div class="bill-item-small">
+              <span>Catatan:</span>
+              <span id="resultNotes">-</span>
+            </div>
+          </div>
+
+          <div class="bill-footer">
+            <p>✅ Pesanan Anda telah berhasil diterima!</p>
+            <p class="small-text">
+              Kami akan memproses pesanan Anda dengan cepat.
+            </p>
+            <p class="small-text">Terima kasih telah mempercayai kami!</p>
+          </div>
+
+          <div class="bill-actions">
+            <button id="printBill" class="btn btn-print">🖨️ Cetak</button>
+            <button id="closeBill" class="btn btn-close">❌ Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <footer>
       <div class="socials">
@@ -98,7 +311,8 @@
     <script>
       feather.replace();
     </script>
-    <script src="js/sound.js"></script>
+    <script src="js/sound-manager.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/order.js"></script>
   </body>
 </html>

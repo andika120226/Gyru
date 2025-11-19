@@ -1,5 +1,19 @@
-// Toggel classactive
+// Debounce function for sound effects to prevent spam
+let lastSoundTime = 0;
+function playSoundDebounced(type) {
+  const now = Date.now();
+  if (now - lastSoundTime < 50) return; // 50ms minimum interval
+  lastSoundTime = now;
 
+  if (soundManager) {
+    if (type === "click") soundManager.playClickSound();
+    else if (type === "success") soundManager.playSuccessSound();
+    else if (type === "error") soundManager.playErrorSound();
+    else if (type === "notification") soundManager.playNotificationSound();
+  }
+}
+
+// Toggel classactive
 const navbarNav = document.querySelector(".navbar-nav");
 // ketika hamburger menu di klik
 
