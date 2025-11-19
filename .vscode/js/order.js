@@ -34,6 +34,13 @@ class OrderManager {
         const price = btn.getAttribute("data-price");
         this.addToCart(name, price);
         if (soundManager) soundManager.playClickSound();
+        // Navigate user to dedicated order page so they can review/add more items
+        try {
+          window.location.href = "order.html";
+        } catch (err) {
+          // ignore if navigation not allowed in context
+          console.warn("Navigation to order page failed", err);
+        }
       });
     });
 

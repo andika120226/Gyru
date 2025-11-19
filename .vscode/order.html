@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pesanan Anda - Makanan Cepat Saji</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/custom.css" />
+    <script src="https://unpkg.com/feather-icons"></script>
+  </head>
+  <body>
+    <nav class="navbar">
+      <a href="index.html" class="navbar-logo"
+        >makanan <span> cepat saji</span></a
+      >
+
+      <div class="navbar-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">Tentang Kami</a>
+        <a href="menu.html">Menu</a>
+        <a href="contact.html">Kontak</a>
+      </div>
+
+      <div class="navbar-extra">
+        <a href="#" id="search"><i data-feather="search"></i></a>
+        <a href="menu.html">Tambah Menu</a>
+      </div>
+    </nav>
+
+    <main class="container" style="padding: 2rem 1rem">
+      <h1 style="color: #ffd700">Keranjang & Pemesanan</h1>
+      <p>
+        Di halaman ini Anda dapat melihat daftar pesanan, mengubah jumlah,
+        memasukkan nominal yang dibayarkan, dan mengirim pesanan.
+      </p>
+
+      <section class="cart-review" style="margin-top: 1.5rem">
+        <div id="checkoutItems"></div>
+
+        <div class="checkout-summary" style="margin-top: 1.5rem">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <strong>Total:</strong>
+            <strong id="checkoutTotal">IDR 0</strong>
+          </div>
+
+          <div style="margin-top: 1rem">
+            <label for="customerName">Nama Pemesan</label>
+            <input
+              id="customerName"
+              class="input-field"
+              placeholder="Nama lengkap"
+            />
+          </div>
+
+          <div style="margin-top: 0.8rem">
+            <label for="customerPhone">No. Telepon</label>
+            <input
+              id="customerPhone"
+              class="input-field"
+              placeholder="08xxxxxxxx"
+            />
+          </div>
+
+          <div style="margin-top: 0.8rem">
+            <label for="notes">Catatan (opsional)</label>
+            <textarea
+              id="notes"
+              class="input-field"
+              rows="2"
+              placeholder="Contoh: tanpa bawang..."
+            ></textarea>
+          </div>
+
+          <div style="margin-top: 0.8rem">
+            <label for="amountPaid">Nominal Bayar (IDR)</label>
+            <input
+              id="amountPaid"
+              class="input-field"
+              type="number"
+              min="0"
+              placeholder="Masukkan jumlah yang dibayar pelanggan"
+            />
+          </div>
+
+          <div style="display: flex; gap: 0.6rem; margin-top: 1rem">
+            <button id="sendOrder" class="btn">✅ Kirim Pesanan</button>
+            <button id="clearCartPage" class="btn btn-clear">
+              🗑️ Hapus Keranjang
+            </button>
+            <a href="menu.html" class="btn">➕ Tambah Lagi</a>
+          </div>
+
+          <div id="paymentInfo" style="margin-top: 1rem; display: none">
+            <div style="display: flex; justify-content: space-between">
+              <span>Bayar:</span><span id="paidAmount">IDR 0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between">
+              <span>Kembalian:</span><span id="changeAmount">IDR 0</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bill Modal -->
+    <div id="orderBillModal" class="modal">
+      <div class="modal-content bill-modal-content">
+        <span class="close" id="closeBillModal">&times;</span>
+        <h2>📋 BILL PESANAN</h2>
+        <div class="bill-result">
+          <div class="bill-header">
+            <h4>🍔 MAKANAN CEPAT SAJI 🍔</h4>
+            <p class="timestamp" id="billTime"></p>
+          </div>
+
+          <div class="bill-items">
+            <h4 class="bill-items-title">Rincian Pesanan</h4>
+            <div id="billList"></div>
+            <div class="bill-divider"></div>
+            <div class="bill-item bill-total">
+              <span>TOTAL PEMBAYARAN:</span>
+              <span id="billTotal">IDR 0</span>
+            </div>
+            <div
+              style="
+                margin-top: 0.6rem;
+                display: flex;
+                justify-content: space-between;
+              "
+            >
+              <span>Dibayar:</span><span id="billPaid">IDR 0</span>
+            </div>
+            <div
+              style="
+                margin-top: 0.2rem;
+                display: flex;
+                justify-content: space-between;
+              "
+            >
+              <span>Kembalian:</span><span id="billChange">IDR 0</span>
+            </div>
+          </div>
+
+          <div class="bill-info">
+            <h4>Data Pemesan</h4>
+            <div class="bill-item-small">
+              <span>Nama:</span>
+              <span id="billName">-</span>
+            </div>
+            <div class="bill-item-small">
+              <span>No. Telepon:</span>
+              <span id="billPhone">-</span>
+            </div>
+            <div class="bill-item-small">
+              <span>Catatan:</span>
+              <span id="billNotes">-</span>
+            </div>
+          </div>
+
+          <div class="bill-actions">
+            <button id="printBillBtn" class="btn btn-print">🖨️ Cetak</button>
+            <button id="closeBillBtn" class="btn btn-close">❌ Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="credit" style="text-align: center; padding: 2rem 0">
+        <p>Created by CarliAndika | &copy; 2025</p>
+      </div>
+    </footer>
+
+    <script>
+      feather.replace();
+    </script>
+    <script src="js/sound-manager.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/order.js"></script>
+    <script src="js/checkout.js"></script>
+  </body>
+</html>
