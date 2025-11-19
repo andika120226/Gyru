@@ -31,7 +31,10 @@
 
       <div class="navbar-extra">
         <a href="#" id="search"><i data-feather="search"></i></a>
-        <a href="#" id="shopping-cart"><i data-feather="shopping-cart"></i></a>
+        <a href="#" id="shopping-cart" class="cart-icon-wrapper">
+          <i data-feather="shopping-cart"></i>
+          <span id="cartCount" class="cart-badge"></span>
+        </a>
         <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
       </div>
     </nav>
@@ -101,42 +104,37 @@
       </div>
     </section>
 
-    <!-- Modal Pemesanan -->
-    <div id="orderModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Form Pemesanan</h2>
+    <!-- Cart Sidebar Modal -->
+    <div id="cartModal" class="modal">
+      <div class="cart-content">
+        <div class="cart-header">
+          <h2>🛒 KERANJANG PESANAN</h2>
+          <span
+            class="close"
+            onclick="document.getElementById('cartModal').classList.remove('show')"
+            >&times;</span
+          >
+        </div>
 
-        <div class="order-container">
-          <!-- Form Input -->
-          <div class="order-form">
-            <div class="form-group">
-              <label>Nama Menu</label>
-              <input type="text" id="menuName" readonly class="input-field" />
+        <div class="cart-body">
+          <div id="emptyCart" class="empty-state">
+            <p class="empty-message">Keranjang kosong</p>
+            <p class="empty-subtext">Pilih menu untuk memulai pesanan Anda</p>
+          </div>
+          <div id="cartItemsList" class="cart-items-list"></div>
+        </div>
+
+        <div id="checkoutSection" class="cart-checkout">
+          <div class="cart-summary">
+            <div class="summary-item">
+              <span>Total Harga:</span>
+              <span id="totalPrice">IDR 0</span>
             </div>
+          </div>
 
+          <form class="checkout-form">
             <div class="form-group">
-              <label>Harga Satuan</label>
-              <input type="text" id="menuPrice" readonly class="input-field" />
-            </div>
-
-            <div class="form-group">
-              <label>Jumlah Pesanan</label>
-              <div class="quantity-control">
-                <button id="decreaseQty" class="qty-btn">-</button>
-                <input
-                  type="number"
-                  id="quantity"
-                  value="1"
-                  min="1"
-                  class="qty-input"
-                />
-                <button id="increaseQty" class="qty-btn">+</button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Nama Pemesan</label>
+              <label>Nama Lengkap</label>
               <input
                 type="text"
                 id="customerName"
@@ -165,69 +163,28 @@
               ></textarea>
             </div>
 
-            <button id="submitOrder" class="btn btn-submit">
-              📋 Kirim Pesanan
-            </button>
-          </div>
-
-          <!-- Preview Bill -->
-          <div class="order-preview">
-            <h3>Preview Pesanan</h3>
-            <div class="bill">
-              <div class="bill-header">
-                <h4>STRUK PESANAN</h4>
-                <p>Makanan Cepat Saji</p>
-              </div>
-
-              <div class="bill-items">
-                <div class="bill-item">
-                  <span>Produk:</span>
-                  <span id="billProduct">-</span>
-                </div>
-                <div class="bill-item">
-                  <span>Harga:</span>
-                  <span id="billPrice">-</span>
-                </div>
-                <div class="bill-item">
-                  <span>Jumlah:</span>
-                  <span id="billQty">-</span>
-                </div>
-                <div class="bill-divider"></div>
-                <div class="bill-item bill-total">
-                  <span>TOTAL:</span>
-                  <span id="billTotal">IDR 0</span>
-                </div>
-              </div>
-
-              <div class="bill-info">
-                <div class="bill-item-small">
-                  <span>Pemesan:</span>
-                  <span id="billCustomer">-</span>
-                </div>
-                <div class="bill-item-small">
-                  <span>No. HP:</span>
-                  <span id="billPhone">-</span>
-                </div>
-                <div class="bill-item-small">
-                  <span>Catatan:</span>
-                  <span id="billNotes">-</span>
-                </div>
-              </div>
-
-              <div class="bill-footer">
-                <p>Terima kasih telah memesan!</p>
-              </div>
+            <div class="button-group">
+              <button type="button" id="submitOrder" class="btn btn-submit">
+                ✅ Lanjutkan Pembayaran
+              </button>
+              <button type="button" id="clearCart" class="btn btn-clear">
+                🗑️ Hapus Semua
+              </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
 
-    <!-- Modal Bill Hasil Pesanan -->
+    <!-- Bill Modal -->
     <div id="billModal" class="modal">
       <div class="modal-content bill-modal-content">
-        <span class="close close-bill">&times;</span>
-        <h2>BILL PESANAN ANDA</h2>
+        <span
+          class="close"
+          onclick="document.getElementById('billModal').classList.remove('show')"
+          >&times;</span
+        >
+        <h2>📋 BILL PESANAN ANDA</h2>
 
         <div class="bill-result">
           <div class="bill-header">
@@ -236,18 +193,8 @@
           </div>
 
           <div class="bill-items">
-            <div class="bill-item">
-              <span>Produk:</span>
-              <span id="resultProduct">-</span>
-            </div>
-            <div class="bill-item">
-              <span>Harga Satuan:</span>
-              <span id="resultPrice">-</span>
-            </div>
-            <div class="bill-item">
-              <span>Jumlah:</span>
-              <span id="resultQty">-</span>
-            </div>
+            <h4 class="bill-items-title">Detail Pesanan:</h4>
+            <div id="billItemsContainer"></div>
             <div class="bill-divider"></div>
             <div class="bill-item bill-total">
               <span>TOTAL PEMBAYARAN:</span>
@@ -302,9 +249,7 @@
       </div>
 
       <div class="credit">
-        <p style="color: black">
-          Created by <a href="">CarliAndika</a> | &copy; 2025
-        </p>
+        <p>Created by <a href="">CarliAndika</a> | &copy; 2025</p>
       </div>
     </footer>
 

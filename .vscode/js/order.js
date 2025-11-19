@@ -1,8 +1,27 @@
-// Order Management System
+// Order Management System with Shopping Cart
 class OrderManager {
   constructor() {
-    this.currentOrder = null;
+    this.cart = [];
+    this.customerInfo = {
+      name: "",
+      phone: "",
+      notes: "",
+    };
     this.initEventListeners();
+    this.loadCart();
+  }
+
+  loadCart() {
+    const saved = localStorage.getItem("cart");
+    if (saved) {
+      this.cart = JSON.parse(saved);
+      this.updateCartDisplay();
+    }
+  }
+
+  saveCart() {
+    localStorage.setItem("cart", JSON.stringify(this.cart));
+    this.updateCartDisplay();
   }
 
   initEventListeners() {
@@ -13,7 +32,7 @@ class OrderManager {
         e.stopPropagation();
         const name = btn.getAttribute("data-name");
         const price = btn.getAttribute("data-price");
-        this.openOrderModal(name, price);
+        this.addToCart(name, price);
         if (soundManager) soundManager.playClickSound();
       });
     });
@@ -41,113 +60,228 @@ class OrderManager {
       });
     });
 
-    // Quantity controls
-    document.getElementById("decreaseQty").addEventListener("click", () => {
-      const qty = parseInt(document.getElementById("quantity").value) || 1;
-      if (qty > 1) {
-        document.getElementById("quantity").value = qty - 1;
-        this.updateBillPreview();
+    // Cart sidebar toggle
+    const cartBtn = document.getElementById("shopping-cart");
+    if (cartBtn) {
+      cartBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.toggleCartSidebar();
         if (soundManager) soundManager.playClickSound();
-      }
-    });
+      });
+    }
 
-    document.getElementById("increaseQty").addEventListener("click", () => {
-      const qty = parseInt(document.getElementById("quantity").value) || 1;
-      document.getElementById("quantity").value = qty + 1;
-      this.updateBillPreview();
-      if (soundManager) soundManager.playClickSound();
-    });
+    // Input fields for customer info
+    const customerNameInput = document.getElementById("customerName");
+    const customerPhoneInput = document.getElementById("customerPhone");
+    const notesInput = document.getElementById("notes");
 
-    // Quantity input change
-    document.getElementById("quantity").addEventListener("change", () => {
-      this.updateBillPreview();
-    });
-
-    // Input fields update preview in real-time
-    document.getElementById("customerName").addEventListener("input", () => {
-      this.updateBillPreview();
-    });
-
-    document.getElementById("customerPhone").addEventListener("input", () => {
-      this.updateBillPreview();
-    });
-
-    document.getElementById("notes").addEventListener("input", () => {
-      this.updateBillPreview();
-    });
+    if (customerNameInput) {
+      customerNameInput.addEventListener("input", (e) => {
+        this.customerInfo.name = e.target.value;
+      });
+    }
+    if (customerPhoneInput) {
+      customerPhoneInput.addEventListener("input", (e) => {
+        this.customerInfo.phone = e.target.value;
+      });
+    }
+    if (notesInput) {
+      notesInput.addEventListener("input", (e) => {
+        this.customerInfo.notes = e.target.value;
+      });
+    }
 
     // Submit order button
-    document.getElementById("submitOrder").addEventListener("click", () => {
-      this.submitOrder();
-    });
+    const submitBtn = document.getElementById("submitOrder");
+    if (submitBtn) {
+      submitBtn.addEventListener("click", () => {
+        this.submitOrder();
+      });
+    }
 
     // Print button
-    document.getElementById("printBill").addEventListener("click", () => {
-      this.printBill();
-    });
+    const printBtn = document.getElementById("printBill");
+    if (printBtn) {
+      printBtn.addEventListener("click", () => {
+        this.printBill();
+      });
+    }
 
     // Close bill button
-    document.getElementById("closeBill").addEventListener("click", () => {
-      document.getElementById("billModal").classList.remove("show");
-      document.getElementById("orderModal").classList.remove("show");
-      if (soundManager) soundManager.playClickSound();
+    const closeBillBtn = document.getElementById("closeBill");
+    if (closeBillBtn) {
+      closeBillBtn.addEventListener("click", () => {
+        document.getElementById("billModal").classList.remove("show");
+        document.getElementById("cartModal").classList.remove("show");
+        this.clearCart();
+        if (soundManager) soundManager.playClickSound();
+      });
+    }
+
+    // Clear cart button
+    const clearCartBtn = document.getElementById("clearCart");
+    if (clearCartBtn) {
+      clearCartBtn.addEventListener("click", () => {
+        if (confirm("Hapus semua item dari keranjang?")) {
+          this.clearCart();
+          if (soundManager) soundManager.playClickSound();
+        }
+      });
+    }
+  }
+
+  addToCart(name, price) {
+    const existingItem = this.cart.find((item) => item.name === name);
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      this.cart.push({
+        id: Date.now(),
+        name: name,
+        price: parseInt(price),
+        quantity: 1,
+      });
+    }
+
+    this.saveCart();
+    this.showCartNotification();
+  }
+
+  removeFromCart(itemId) {
+    this.cart = this.cart.filter((item) => item.id !== itemId);
+    this.saveCart();
+    if (soundManager) soundManager.playClickSound();
+  }
+
+  updateItemQuantity(itemId, quantity) {
+    const item = this.cart.find((item) => item.id === itemId);
+    if (item) {
+      if (quantity <= 0) {
+        this.removeFromCart(itemId);
+      } else {
+        item.quantity = quantity;
+        this.saveCart();
+      }
+    }
+  }
+
+  clearCart() {
+    this.cart = [];
+    this.customerInfo = { name: "", phone: "", notes: "" };
+    localStorage.removeItem("cart");
+    this.updateCartDisplay();
+    document.getElementById("cartModal").classList.remove("show");
+  }
+
+  toggleCartSidebar() {
+    const cartModal = document.getElementById("cartModal");
+    if (!cartModal) {
+      console.warn("Cart modal not found");
+      return;
+    }
+
+    if (cartModal.classList.contains("show")) {
+      cartModal.classList.remove("show");
+    } else {
+      cartModal.classList.add("show");
+      this.updateCartDisplay();
+    }
+  }
+
+  updateCartDisplay() {
+    const cartItemsList = document.getElementById("cartItemsList");
+    const cartCount = document.getElementById("cartCount");
+    const emptyCart = document.getElementById("emptyCart");
+    const checkoutSection = document.getElementById("checkoutSection");
+
+    if (!cartItemsList) return;
+
+    // Update cart count badge
+    if (cartCount) {
+      const totalItems = this.cart.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
+      cartCount.textContent = totalItems;
+      cartCount.style.display = totalItems > 0 ? "inline-block" : "none";
+    }
+
+    if (this.cart.length === 0) {
+      cartItemsList.innerHTML = '<p class="empty-message">Keranjang kosong</p>';
+      if (emptyCart) emptyCart.style.display = "block";
+      if (checkoutSection) checkoutSection.style.display = "none";
+      return;
+    }
+
+    if (emptyCart) emptyCart.style.display = "none";
+    if (checkoutSection) checkoutSection.style.display = "block";
+
+    let html = "";
+    let totalPrice = 0;
+
+    this.cart.forEach((item) => {
+      const subtotal = item.price * item.quantity;
+      totalPrice += subtotal;
+
+      html += `
+        <div class="cart-item">
+          <div class="item-details">
+            <h4>${item.name}</h4>
+            <p class="item-price">IDR ${item.price.toLocaleString("id-ID")}</p>
+          </div>
+          <div class="item-control">
+            <div class="qty-control-inline">
+              <button class="qty-btn-sm" onclick="orderManager.updateItemQuantity(${
+                item.id
+              }, ${item.quantity - 1})">-</button>
+              <span class="qty-display">${item.quantity}</span>
+              <button class="qty-btn-sm" onclick="orderManager.updateItemQuantity(${
+                item.id
+              }, ${item.quantity + 1})">+</button>
+            </div>
+            <p class="subtotal">IDR ${subtotal.toLocaleString("id-ID")}</p>
+            <button class="btn-remove" onclick="orderManager.removeFromCart(${
+              item.id
+            })">Hapus</button>
+          </div>
+        </div>
+      `;
     });
+
+    cartItemsList.innerHTML = html;
+
+    // Update total price
+    const totalPriceEl = document.getElementById("totalPrice");
+    if (totalPriceEl) {
+      totalPriceEl.textContent = `IDR ${totalPrice.toLocaleString("id-ID")}`;
+    }
   }
 
-  openOrderModal(menuName, menuPrice) {
-    // Set menu info
-    document.getElementById("menuName").value = menuName;
-    document.getElementById("menuPrice").value = `IDR ${parseInt(
-      menuPrice
-    ).toLocaleString("id-ID")}`;
-    document.getElementById("quantity").value = 1;
+  showCartNotification() {
+    const notif = document.createElement("div");
+    notif.className = "cart-notification";
+    notif.textContent = "✅ Item ditambahkan ke keranjang!";
+    document.body.appendChild(notif);
 
-    // Clear form fields
-    document.getElementById("customerName").value = "";
-    document.getElementById("customerPhone").value = "";
-    document.getElementById("notes").value = "";
+    setTimeout(() => {
+      notif.classList.add("show");
+    }, 10);
 
-    // Reset bill preview
-    this.currentOrder = {
-      menuName,
-      menuPrice: parseInt(menuPrice),
-    };
-
-    this.updateBillPreview();
-
-    // Show modal
-    document.getElementById("orderModal").classList.add("show");
-  }
-
-  updateBillPreview() {
-    if (!this.currentOrder) return;
-
-    const qty = parseInt(document.getElementById("quantity").value) || 1;
-    const customerName = document.getElementById("customerName").value || "-";
-    const customerPhone = document.getElementById("customerPhone").value || "-";
-    const notes = document.getElementById("notes").value || "-";
-    const total = this.currentOrder.menuPrice * qty;
-
-    // Update preview bill
-    document.getElementById("billProduct").textContent =
-      this.currentOrder.menuName;
-    document.getElementById(
-      "billPrice"
-    ).textContent = `IDR ${this.currentOrder.menuPrice.toLocaleString(
-      "id-ID"
-    )}`;
-    document.getElementById("billQty").textContent = `${qty}x`;
-    document.getElementById(
-      "billTotal"
-    ).textContent = `IDR ${total.toLocaleString("id-ID")}`;
-    document.getElementById("billCustomer").textContent = customerName;
-    document.getElementById("billPhone").textContent = customerPhone;
-    document.getElementById("billNotes").textContent = notes;
+    setTimeout(() => {
+      notif.classList.remove("show");
+      setTimeout(() => notif.remove(), 300);
+    }, 2000);
   }
 
   submitOrder() {
-    const customerName = document.getElementById("customerName").value.trim();
-    const customerPhone = document.getElementById("customerPhone").value.trim();
+    if (this.cart.length === 0) {
+      alert("❌ Keranjang kosong! Silakan tambah item terlebih dahulu.");
+      return;
+    }
+
+    const customerName = this.customerInfo.name.trim();
+    const customerPhone = this.customerInfo.phone.trim();
 
     // Validation
     if (!customerName) {
@@ -168,11 +302,9 @@ class OrderManager {
   }
 
   showBillResult() {
-    const qty = parseInt(document.getElementById("quantity").value) || 1;
-    const customerName = document.getElementById("customerName").value;
-    const customerPhone = document.getElementById("customerPhone").value;
-    const notes = document.getElementById("notes").value || "-";
-    const total = this.currentOrder.menuPrice * qty;
+    const customerName = this.customerInfo.name;
+    const customerPhone = this.customerInfo.phone;
+    const notes = this.customerInfo.notes || "-";
 
     // Get current date and time
     const now = new Date();
@@ -185,34 +317,59 @@ class OrderManager {
       second: "2-digit",
     });
 
+    // Calculate totals
+    let totalPrice = 0;
+    let itemsHtml = "";
+
+    this.cart.forEach((item) => {
+      const subtotal = item.price * item.quantity;
+      totalPrice += subtotal;
+
+      itemsHtml += `
+        <div class="bill-item-row">
+          <span>${item.name} x${item.quantity}</span>
+          <span>IDR ${subtotal.toLocaleString("id-ID")}</span>
+        </div>
+      `;
+    });
+
     // Update result bill
-    document.getElementById("resultProduct").textContent =
-      this.currentOrder.menuName;
-    document.getElementById(
-      "resultPrice"
-    ).textContent = `IDR ${this.currentOrder.menuPrice.toLocaleString(
-      "id-ID"
-    )}`;
-    document.getElementById("resultQty").textContent = `${qty}x`;
-    document.getElementById(
-      "resultTotal"
-    ).textContent = `IDR ${total.toLocaleString("id-ID")}`;
+    const billItemsContainer = document.getElementById("billItemsContainer");
+    if (billItemsContainer) {
+      billItemsContainer.innerHTML = itemsHtml;
+    }
+
     document.getElementById("resultCustomer").textContent = customerName;
     document.getElementById("resultPhone").textContent = customerPhone;
     document.getElementById("resultNotes").textContent = notes;
+    document.getElementById(
+      "resultTotal"
+    ).textContent = `IDR ${totalPrice.toLocaleString("id-ID")}`;
     document.getElementById("orderTime").textContent = dateTime;
 
-    // Hide order modal, show bill modal
-    document.getElementById("orderModal").classList.remove("show");
+    // Hide cart modal, show bill modal
+    document.getElementById("cartModal").classList.remove("show");
     document.getElementById("billModal").classList.add("show");
   }
 
   printBill() {
-    const qty = parseInt(document.getElementById("quantity").value) || 1;
-    const customerName = document.getElementById("customerName").value;
-    const customerPhone = document.getElementById("customerPhone").value;
-    const notes = document.getElementById("notes").value || "-";
-    const total = this.currentOrder.menuPrice * qty;
+    const customerName = this.customerInfo.name;
+    const customerPhone = this.customerInfo.phone;
+    const notes = this.customerInfo.notes || "-";
+
+    let totalPrice = 0;
+    let itemsHtml = "";
+
+    this.cart.forEach((item) => {
+      const subtotal = item.price * item.quantity;
+      totalPrice += subtotal;
+      itemsHtml += `
+        <div class="item">
+          <span>${item.name} x${item.quantity}</span>
+          <span>IDR ${subtotal.toLocaleString("id-ID")}</span>
+        </div>
+      `;
+    });
 
     const printContent = `
       <html>
@@ -234,7 +391,7 @@ class OrderManager {
             }
             .title { font-weight: bold; font-size: 16px; }
             .divider { border-bottom: 2px dashed #000; margin: 10px 0; }
-            .item { display: flex; justify-content: space-between; margin: 5px 0; }
+            .item { display: flex; justify-content: space-between; margin: 5px 0; font-size: 12px; }
             .total { 
               font-weight: bold; 
               display: flex; 
@@ -242,8 +399,10 @@ class OrderManager {
               margin: 10px 0;
               padding: 5px;
               background: #f0f0f0;
+              font-size: 14px;
             }
             .footer { text-align: center; margin-top: 15px; font-size: 12px; }
+            .info { font-size: 12px; margin: 5px 0; }
           </style>
         </head>
         <body>
@@ -252,42 +411,22 @@ class OrderManager {
             <div style="font-size: 12px; margin-top: 5px;">Terima kasih telah memesan</div>
           </div>
           
-          <div class="item">
-            <span>Produk:</span>
-            <span>${this.currentOrder.menuName}</span>
-          </div>
-          <div class="item">
-            <span>Harga:</span>
-            <span>IDR ${this.currentOrder.menuPrice.toLocaleString(
-              "id-ID"
-            )}</span>
-          </div>
-          <div class="item">
-            <span>Jumlah:</span>
-            <span>${qty}x</span>
-          </div>
+          <div class="divider"></div>
+          
+          ${itemsHtml}
           
           <div class="divider"></div>
           
           <div class="total">
             <span>TOTAL:</span>
-            <span>IDR ${total.toLocaleString("id-ID")}</span>
+            <span>IDR ${totalPrice.toLocaleString("id-ID")}</span>
           </div>
           
           <div class="divider"></div>
           
-          <div class="item" style="margin-top: 10px;">
-            <span><strong>Nama:</strong></span>
-            <span>${customerName}</span>
-          </div>
-          <div class="item">
-            <span><strong>No. HP:</strong></span>
-            <span>${customerPhone}</span>
-          </div>
-          <div class="item">
-            <span><strong>Catatan:</strong></span>
-            <span>${notes}</span>
-          </div>
+          <div class="info"><strong>Nama:</strong> ${customerName}</div>
+          <div class="info"><strong>No. HP:</strong> ${customerPhone}</div>
+          <div class="info"><strong>Catatan:</strong> ${notes}</div>
           
           <div class="footer">
             <p>✅ Pesanan berhasil diterima</p>
@@ -308,6 +447,7 @@ class OrderManager {
 }
 
 // Initialize order manager when DOM is ready
+let orderManager = null;
 document.addEventListener("DOMContentLoaded", () => {
-  new OrderManager();
+  orderManager = new OrderManager();
 });
