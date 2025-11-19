@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Git Dashboard - Makanan Cepat Saji</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/custom.css" />
+    <link rel="stylesheet" href="css/git-dashboard.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <a href="index.html" class="navbar-logo"
+        >makanan <span> cepat saji</span></a
+      >
+
+      <div class="navbar-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">Tentang Kami</a>
+        <a href="menu.html">Menu</a>
+        <a href="contact.html">Kontak</a>
+        <a href="git-dashboard.html" class="active">Git</a>
+      </div>
+
+      <div class="navbar-extra">
+        <label for="sound-toggle" class="sound-toggle">
+          <i data-feather="volume-2"></i>
+          <input type="checkbox" id="sound-toggle" checked />
+        </label>
+        <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
+      </div>
+    </nav>
+
+    <section class="git-dashboard container">
+      <h2><span>Git </span>Dashboard</h2>
+      <p align="center">
+        Kelola repository Anda dengan mudah. Gunakan dashboard ini untuk melacak
+        status git, stage files, commit, dan push ke GitHub dengan satu klik!
+      </p>
+
+      <div class="dashboard-grid">
+        <!-- Status Panel -->
+        <div class="panel status-panel card">
+          <h3>📊 Repository Status</h3>
+          <div class="status-content">
+            <div class="status-item">
+              <span class="label">Branch:</span>
+              <span class="value" id="branch-name">main</span>
+            </div>
+            <div class="status-item">
+              <span class="label">Remote:</span>
+              <span class="value truncate" id="remote-url"
+                >https://github.com/andika120226/Gyru.git</span
+              >
+            </div>
+            <div class="status-item">
+              <span class="label">Status:</span>
+              <span class="value status-badge" id="status-badge"
+                >Up to date</span
+              >
+            </div>
+          </div>
+          <button class="btn btn-small" id="refresh-status">
+            <i data-feather="refresh-cw"></i> Refresh Status
+          </button>
+        </div>
+
+        <!-- Uncommitted Files -->
+        <div class="panel files-panel card">
+          <h3>📝 Uncommitted Changes</h3>
+          <div id="uncommitted-files" class="files-list">
+            <div class="loading">Loading files...</div>
+          </div>
+        </div>
+
+        <!-- Commands Panel -->
+        <div class="panel commands-panel card">
+          <h3>⚙️ Git Commands</h3>
+          <div class="command-input-group">
+            <input
+              type="text"
+              id="commit-message"
+              placeholder="Enter commit message..."
+              class="command-input"
+            />
+          </div>
+
+          <div class="commands-list">
+            <button class="btn btn-command" id="cmd-add">
+              <i data-feather="plus"></i> Stage All
+            </button>
+            <button class="btn btn-command" id="cmd-commit">
+              <i data-feather="check-circle"></i> Commit
+            </button>
+            <button class="btn btn-command" id="cmd-push">
+              <i data-feather="arrow-up"></i> Push
+            </button>
+            <button class="btn btn-command" id="cmd-pull">
+              <i data-feather="arrow-down"></i> Pull
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="panel quick-actions card">
+          <h3>⚡ Quick Actions</h3>
+          <button class="btn btn-quick" id="quick-sync">
+            <i data-feather="git-branch"></i> Sync (Add + Commit + Push)
+          </button>
+          <button class="btn btn-quick" id="quick-view-log">
+            <i data-feather="list"></i> View Log
+          </button>
+        </div>
+      </div>
+
+      <!-- Terminal Output -->
+      <div class="panel output-panel card">
+        <h3>📌 Terminal Commands</h3>
+        <div class="output-content">
+          <div id="command-output" class="command-output">
+            <p class="info">
+              Commands will appear here. Click to copy to clipboard.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Checklist Section -->
+      <div class="panel checklist-panel card">
+        <h3>✅ Task Checklist</h3>
+        <div class="checklist">
+          <label class="checklist-item">
+            <input
+              type="checkbox"
+              class="task-check"
+              data-task="files-staged"
+            />
+            <span>Stage all files</span>
+          </label>
+          <label class="checklist-item">
+            <input type="checkbox" class="task-check" data-task="committed" />
+            <span>Create commit</span>
+          </label>
+          <label class="checklist-item">
+            <input type="checkbox" class="task-check" data-task="pushed" />
+            <span>Push to GitHub</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+      <div class="modal-content">
+        <h2>Settings</h2>
+        <div class="settings-group">
+          <label>
+            <span>Sound Volume:</span>
+            <input
+              type="range"
+              id="volume-slider"
+              min="0"
+              max="1"
+              step="0.1"
+              value="0.3"
+            />
+          </label>
+        </div>
+        <button class="btn" onclick="closeSettings()">Close</button>
+      </div>
+    </div>
+
+    <footer>
+      <div class="socials">
+        <a href="#"><i data-feather="instagram"></i></a>
+        <a href="#"><i data-feather="twitter"></i></a>
+        <a href="#"><i data-feather="facebook"></i></a>
+      </div>
+
+      <div class="links">
+        <a href="index.html">Home</a>
+        <a href="about.html">Tentang Kami</a>
+        <a href="menu.html">Menu</a>
+        <a href="contact.html">Kontak</a>
+      </div>
+
+      <div class="credit">
+        <p style="color: black">
+          Created by <a href="">CarliAndika</a> | &copy; 2025
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      feather.replace();
+    </script>
+    <script src="js/sound-manager.js"></script>
+    <script src="js/git-manager.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/git-dashboard.js"></script>
+  </body>
+</html>

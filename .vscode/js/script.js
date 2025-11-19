@@ -4,6 +4,7 @@ const navbarNav = document.querySelector(".navbar-nav");
 // ketika hamburger menu di klik
 
 document.querySelector("#hamburger-menu").onclick = () => {
+  playSoundDebounced("click");
   navbarNav.classList.toggle("active");
 };
 
@@ -21,6 +22,7 @@ document.addEventListener("click", function (e) {
 const navLinks = document.querySelectorAll(".navbar-nav a");
 navLinks.forEach((link) => {
   link.addEventListener("click", () => {
+    playSoundDebounced("click");
     navbarNav.classList.remove("active");
   });
 });
@@ -29,6 +31,7 @@ navLinks.forEach((link) => {
 const menuCards = document.querySelectorAll(".menu-card, .card");
 menuCards.forEach((card) => {
   card.addEventListener("mouseenter", () => {
+    playSoundDebounced("hover");
     card.style.animation = "none";
     setTimeout(() => {
       card.style.animation = "";
@@ -37,6 +40,7 @@ menuCards.forEach((card) => {
 
   // Ripple effect on click
   card.addEventListener("click", (e) => {
+    playSoundDebounced("click");
     const ripple = document.createElement("span");
     ripple.style.position = "absolute";
     ripple.style.width = "20px";
@@ -71,17 +75,20 @@ const observer = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 // Observe menu cards dan sections
-document.querySelectorAll(".menu-card, .card, .about, .contact").forEach((el) => {
-  el.style.opacity = "0";
-  el.style.transform = "translateY(20px)";
-  el.style.transition = "all 0.6s ease";
-  observer.observe(el);
-});
+document
+  .querySelectorAll(".menu-card, .card, .about, .contact")
+  .forEach((el) => {
+    el.style.opacity = "0";
+    el.style.transform = "translateY(20px)";
+    el.style.transition = "all 0.6s ease";
+    observer.observe(el);
+  });
 
 // Button click feedback
 const buttons = document.querySelectorAll("button, .cta");
 buttons.forEach((btn) => {
   btn.addEventListener("click", () => {
+    playSoundDebounced("success");
     btn.style.transform = "scale(0.95)";
     setTimeout(() => {
       btn.style.transform = "scale(1)";
